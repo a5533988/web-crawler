@@ -1,0 +1,29 @@
+import requests, time, json
+import pandas as pd
+
+data_list = []
+
+for i in range(1, 20):
+    url = "https://webapi.91app.com/webapi/LocationV2/GetLocationListByCity?cityId={}&startIndex=0&maxCount=100&r=null&lang=zh-TW&shopId=41218"
+    headers = {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"
+    }
+    res = requests.get(url.format(i), headers=headers)
+    time.sleep(0.5)
+
+    raw_data = res.json()
+    data = raw_data["Data"]["List"]
+
+    
+    for j in data:
+        prod_data = {
+            "Name": j["Name"],
+            "TelPrepend": j["TelPrepend"],
+            "Tel": j["Tel"],
+            "Address": j["Address"]
+        }
+        data_list.append(prod_data)
+
+df = pd.DataFrame(data_list)
+# print(df)
+df.to_excel("medfirst.xlsx")
